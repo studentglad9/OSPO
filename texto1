@@ -1,4 +1,4 @@
   "@pnp/adaljsclient": "^2.15.0",
 https://github.com/pnp/pnpjs/blob/version-4/samples/spfx-react-components/src/webparts/pnPjs/PnPjsWebPart.ts
 
-npm install react-redux redux @reduxjs/toolkit
+npm install react-redux@8.0.5 redux@4.1.2 @reduxjs/toolkit@1.8.5
