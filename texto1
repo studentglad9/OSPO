@@ -1,14 +1,4 @@
   "@pnp/adaljsclient": "^2.15.0",
 https://github.com/pnp/pnpjs/blob/version-4/samples/spfx-react-components/src/webparts/pnPjs/PnPjsWebPart.ts
 
-import "@pnp/sp/webs";
-import "@pnp/sp/lists";
-import "@pnp/sp/items";
-import "@pnp/sp/fields";
-import "@pnp/sp/site-users/web";
-import { getSP } from "../service/PnpConfigService";
-import { Caching } from "@pnp/queryable";
-import { SPFI, spfi } from "@pnp/sp";
-const _sp: SPFI = getSP();
-const spCache = spfi(_sp).using(Caching({ store: "session" }));
-export default spCache;
+npm install react-redux redux @reduxjs/toolkit
