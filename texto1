@@ -1,13 +1,18 @@
   "@pnp/adaljsclient": "^2.15.0",
 https://github.com/pnp/pnpjs/blob/version-4/samples/spfx-react-components/src/webparts/pnPjs/PnPjsWebPart.ts
 
- const { loading, data, error } = useSelector((state: any) => state);
-  <div>
-            {loading && <p>Loading...</p>}
-            {error && <p>Error: {error}</p>}
-            <ul>
-                {data.map((item: any) => (
-                    <li key={item.id}>{item.title}</li>
-                ))}
-            </ul>
-        </div>
+// src/App.tsx
+import React from "react";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import DataFetcher from "./components/DataFetcher";
+
+const App: React.FC = () => {
+    return (
+        <Provider store={store}>
+            <DataFetcher />
+        </Provider>
+    );
+};
+
+export default App;
