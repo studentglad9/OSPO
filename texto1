@@ -1,18 +1,23 @@
   "@pnp/adaljsclient": "^2.15.0",
 https://github.com/pnp/pnpjs/blob/version-4/samples/spfx-react-components/src/webparts/pnPjs/PnPjsWebPart.ts
 
-// src/App.tsx
-import React from "react";
-import { Provider } from "react-redux";
-import { store } from "./redux/store";
-import DataFetcher from "./components/DataFetcher";
+import { getSP as spInstance } from "./PnpConfigService";
+import { Log } from "@microsoft/sp-core-library";
 
-const App: React.FC = () => {
-    return (
-        <Provider store={store}>
-            <DataFetcher />
-        </Provider>
-    );
+const getCurrentUser = async (): Promise<any> => {
+  Log.warn("getCurrentUser", JSON.stringify(Object.keys(spInstance() || {})));
+  if (spInstance) {
+    return await spInstance().web.currentUser();
+  }
+  return {};
+};
+const getPermisos = async (idUser: number): Promise<any> => {
+  return await spInstance().web.siteUsers.getById(idUser).groups;
 };
 
-export default App;
+const SharepointService = {
+  getCurrentUser,
+  getPermisos,
+};
+
+export default SharepointService;
