@@ -1,22 +1,38 @@
-import { Dispatch } from "redux";
-import { EnumSharepoint } from "../../enum/enumSharepoint";
-import SharepointService from "../../service/SharepointService";
-import { Log } from "@microsoft/sp-core-library";
+import { EnumSharepoint } from '../../enum/enumSharepoint';
+import { Log } from '@microsoft/sp-core-library'
 
-export const getUserCurrent = () => {
-  return async (dispatch: Dispatch) => {
-    try {
-      const title = (await SharepointService.getCurrentUser()).Title;
-      dispatch({
-        type: EnumSharepoint.GET_USER_CURRENT,
-        payload: { Title: title },
-      });
-    } catch (error) {
-      Log.warn("Error - getCurrentUser", error?.message);
-      dispatch({
-        type: EnumSharepoint.ERROR_SHAREPOINT,
-        payload: { Error: error?.message },
-      });
-    }
-  };
+
+export interface SharepointState {
+    error: string;
+    userName: string;
+  }
+
+
+const initialState: SharepointState = {
+    error: '',
+    userName: ''
 };
+const SharepointReducer = (state = initialState, action: any):SharepointState => {
+   
+    switch (action.type) {
+        case EnumSharepoint.GET_USER_CURRENT:
+            Log.warn('SharepointReducer-GET_USER_CURRENT', JSON.stringify(action));
+            return {
+                ...state,
+                userName: action.payload.Title,
+            };
+        case EnumSharepoint.ERROR_SHAREPOINT:
+            Log.warn('SharepointReducer-ERROR_SHAREPOINT', JSON.stringify(action));
+            return {
+                ...state,
+                userName: action.payload.Title,
+                error: action.payload.Error
+                };
+        default:
+            Log.warn('SharepointReducer-default', JSON.stringify(action));
+            return state;
+    }
+};
+
+
+export default SharepointReducer;
