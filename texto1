@@ -1,23 +1,63 @@
   "@pnp/adaljsclient": "^2.15.0",
 https://github.com/pnp/pnpjs/blob/version-4/samples/spfx-react-components/src/webparts/pnPjs/PnPjsWebPart.ts
 
-import { getSP as spInstance } from "./PnpConfigService";
-import { Log } from "@microsoft/sp-core-library";
+import { WebPartContext } from "@microsoft/sp-webpart-base";
+// import pnp and pnp logging system
+import { LogLevel, PnPLogging } from "@pnp/logging";
+import "@pnp/sp/webs";
+import "@pnp/sp/lists";
+import "@pnp/sp/items";
+import "@pnp/sp/batching";
+import "@pnp/sp/fields";
+import "@pnp/sp/site-users/web";
+import { DefaultHeaders, GraphFI, } from "@pnp/graph";
+import { SPHttpClient } from '@microsoft/sp-http';
+import { AdalClient } from "@pnp/adaljsclient";
+import "@microsoft/sp-http";
+import { spfi, ISPFXContext, SPFI, SPFx as spSPFx } from "@pnp/sp";
+import { graphfi, SPFx as graphSPFx } from "@pnp/graph";
+import { Log } from '@microsoft/sp-core-library';
 
-const getCurrentUser = async (): Promise<any> => {
-  Log.warn("getCurrentUser", JSON.stringify(Object.keys(spInstance() || {})));
-  if (spInstance) {
-    return await spInstance().web.currentUser();
-  }
-  return {};
-};
-const getPermisos = async (idUser: number): Promise<any> => {
-  return await spInstance().web.siteUsers.getById(idUser).groups;
+let _sp: SPFI | undefined = undefined;
+let _adalClient: any = null;
+
+
+export const getSP = (context?: WebPartContext): SPFI => {
+
+    if (_sp === undefined) {
+        if (!context) {
+            Log.warn('getSPContext', '_sp and context undefined');
+        }
+        _sp = spfi().using(spSPFx(context as ISPFXContext)).using().using(PnPLogging(LogLevel.Warning));
+        return _sp;
+    }
+
+    Log.warn('getSP', JSON.stringify(_sp||{}));
+    return _sp;
 };
 
-const SharepointService = {
-  getCurrentUser,
-  getPermisos,
-};
 
-export default SharepointService;
+export const getGraph = (context?: WebPartContext): GraphFI | null => {
+
+
+    if (context) {
+        return graphfi().using(graphSPFx(context)).using(DefaultHeaders());
+    }
+
+    return null;
+};
+export const getSPHttpClient = (context?: WebPartContext): SPHttpClient | null | undefined => {
+    if (context !== null) {
+        return context?.spHttpClient;
+
+    }
+    return null;
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getAdalClient = (context?: WebPartContext): any => {
+    if (context !== null) {
+        _adalClient = AdalClient.fromSPFxContext(context);
+
+    }
+    return _adalClient;
+};
