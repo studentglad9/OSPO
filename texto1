@@ -1,40 +1,22 @@
-  "@pnp/adaljsclient": "^2.15.0",
-https://github.com/pnp/pnpjs/blob/version-4/samples/spfx-react-components/src/webparts/pnPjs/PnPjsWebPart.ts
+import { Dispatch } from "redux";
+import { EnumSharepoint } from "../../enum/enumSharepoint";
+import SharepointService from "../../service/SharepointService";
+import { Log } from "@microsoft/sp-core-library";
 
-  //public render(): void {
-  public async render(): Promise<void> {
-    const element: React.ReactElement<any> = React.createElement(
-      Provider,
-      { store },
-      React.createElement(WpCotizacion, {
-        description: this.properties.description,
-        isDarkTheme: this._isDarkTheme,
-        environmentMessage: this._environmentMessage,
-        hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
-      })
-    );
-
-    ReactDom.render(element, this.domElement);
-
-   /*  const element: React.ReactElement<IWpCotizacionProps> = React.createElement(
-      WpCotizacion,
-      {
-        description: this.properties.description,
-        isDarkTheme: this._isDarkTheme,
-        environmentMessage: this._environmentMessage,
-        hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
-      }
-    );
-
-    ReactDom.render(element, this.domElement); */
-  }
-
-  protected async onInit(): Promise<void> {
-    await this._getEnvironmentMessage().then(message => {
-      this._environmentMessage = message;
-    }); 
-    await super.onInit();
-    getSP(this.context);
-  }
+export const getUserCurrent = () => {
+  return async (dispatch: Dispatch) => {
+    try {
+      const title = (await SharepointService.getCurrentUser()).Title;
+      dispatch({
+        type: EnumSharepoint.GET_USER_CURRENT,
+        payload: { Title: title },
+      });
+    } catch (error) {
+      Log.warn("Error - getCurrentUser", error?.message);
+      dispatch({
+        type: EnumSharepoint.ERROR_SHAREPOINT,
+        payload: { Error: error?.message },
+      });
+    }
+  };
+};
