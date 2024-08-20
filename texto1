@@ -1,38 +1,52 @@
-import { EnumSharepoint } from '../../enum/enumSharepoint';
-import { Log } from '@microsoft/sp-core-library'
-
-
-export interface SharepointState {
-    error: string;
-    userName: string;
-  }
-
-
-const initialState: SharepointState = {
-    error: '',
-    userName: ''
-};
-const SharepointReducer = (state = initialState, action: any):SharepointState => {
-   
-    switch (action.type) {
-        case EnumSharepoint.GET_USER_CURRENT:
-            Log.warn('SharepointReducer-GET_USER_CURRENT', JSON.stringify(action));
-            return {
-                ...state,
-                userName: action.payload.Title,
-            };
-        case EnumSharepoint.ERROR_SHAREPOINT:
-            Log.warn('SharepointReducer-ERROR_SHAREPOINT', JSON.stringify(action));
-            return {
-                ...state,
-                userName: action.payload.Title,
-                error: action.payload.Error
-                };
-        default:
-            Log.warn('SharepointReducer-default', JSON.stringify(action));
-            return state;
-    }
-};
-
-
-export default SharepointReducer;
+odata.type
+odata.id
+odata.etag
+odata.editLink
+FileSystemObjectType
+Id
+ServerRedirectedEmbedUri
+ServerRedirectedEmbedUrl
+ContentTypeId
+Title
+OData__ColorTag
+ComplianceAssetId
+CUIT
+Ejecutivo_x0020_HCBId
+Ejecutivo_x0020_HCBStringId
+OData__x00c1_rea_x0020_de_x0020_la_x00
+Tipo_x0020_de_x0020_Gesti_x00f3_
+Carta_x0020_de_x0020_Nombramient
+Tipo_x0020_de_x0020_Cobertura
+N_x00fa_mero_x0020_de_x0020_P_x0
+Premio_x0020_Mensual_x0020_Actua
+Premio_x0020_Mensual_x0020_Propu
+Comisi_x00f3_n_x0020_Actual
+Comisi_x00f3_n_x0020_Propuesta_x
+Decisi_x00f3_n_x0020_del_x0020_C
+Fecha_x0020_Impacto_x0020_en_x00
+Observaciones
+Usuario_x0020_Solicita_x0020_CotId
+Usuario_x0020_Solicita_x0020_CotStringId
+Estado
+Vida_x0020__x002d__x0020_Cotizac
+Aseguradora_x0020_1
+Tasa_x0020_Aseg_x0020_1
+Aseguradora_x0020_2
+Tasa_x0020_Aseg_x0020_2
+Aseguradora_x0020_3
+Tasa_x0020_Aseg_x0020_3
+Fecha_x0020_Creaci_x00f3_n
+Fecha_x0020_Env_x00ed_o_x0020_al
+Fecha_x0020_Cierre
+Aseguradora_x0020_Final
+Enviado_x0020_al_x0020_Cliente_x
+CRM
+Diferencia_x0020_Premio_x0020_Me
+ID
+Modified
+Created
+AuthorId
+EditorId
+OData__UIVersionString
+Attachments
+GUID
