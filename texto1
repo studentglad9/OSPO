@@ -15,3 +15,7 @@ ttps://github.com/MystBug/share-point-theming-app/blob/main/src/utils/themeReque
   "strictRelativeUrls": true,
   "credentials": "ondemand"
 }
+
+
+
+npm install redux@4.2.1 react-redux@8.0.5
