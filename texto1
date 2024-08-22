@@ -5,3 +5,13 @@ https://github.com/koltyakov/sp-rest-proxy
 
 
 ttps://github.com/MystBug/share-point-theming-app/blob/main/src/utils/themeRequest.ts
+
+
+
+{
+  "port": 8080,
+  "protocol": "https",
+  "hostname": "yoursharepointsite.sharepoint.com",
+  "strictRelativeUrls": true,
+  "credentials": "ondemand"
+}
