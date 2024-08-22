@@ -2,3 +2,6 @@ https://github.com/koltyakov/sp-rest-proxy
  console.log(this.ctx.siteUrl);
     console.log(this.ctx.authOptions);
     const auth =  await spauth.getAuth(this.ctx.siteUrl, {...this.ctx.authOptions,  electron: require('electron'), force: true});
+
+
+ttps://github.com/MystBug/share-point-theming-app/blob/main/src/utils/themeRequest.ts
