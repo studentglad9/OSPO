@@ -1,39 +1,82 @@
-https://github.com/koltyakov/sp-rest-proxy
- console.log(this.ctx.siteUrl);
-    console.log(this.ctx.authOptions);
-    const auth =  await spauth.getAuth(this.ctx.siteUrl, {...this.ctx.authOptions,  electron: require('electron'), force: true});
+import { AxiosResponse } from "../model/AxiosResponse";
+import list from "../___mocks/cotizacion/list.json";
+import { cleanUrl, axiosInstance } from "../utils/configApi";
 
-
-ttps://github.com/MystBug/share-point-theming-app/blob/main/src/utils/themeRequest.ts
-
-https://github.com/ZenithMEITech/Willis.HB.Front.React/
-
-
-{
-  "port": 8080,
-  "protocol": "https",
-  "hostname": "yoursharepointsite.sharepoint.com",
-  "strictRelativeUrls": true,
-  "credentials": "ondemand"
-}
-
-
-
-npm install redux@4.2.1 react-redux@8.0.5
-
-
-npm install redux-thunk@2.4.2
-npm install redux-devtools-extension@2.13.9
-
-
-
-const RestProxy = require('sp-rest-proxy');
- 
-const settings = {
-  configPath: './config/private.json', // Location for SharePoint instance mapping and credentials
-  port: 8080,                          // Local server port
-  staticRoot: './node_modules/sp-rest-proxy/static'               // Root folder for static content
+const sleep = async (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };
- 
-const restProxy = new RestProxy(settings);
-restProxy.serve();
+
+export const getCotizacionList = async (): Promise<AxiosResponse> => {
+  await sleep(1000);
+  return {
+    data: list,
+    status: 200,
+    statusText: "OK",
+  };
+  /*  return axios
+    .post(
+      cleanUrl("/_api/web/lists/getbytitle('Vida - Cotización - New')")
+    )
+    .then((response) => {
+      const { status, statusText, data }: AxiosResponse = response;
+      if (status !== 200) {
+        console.error("getCotizacionList: status is not 200", {
+          status,
+          data,
+          statusText,
+        });
+      }
+      return {
+        data: data.value,
+        status,
+        statusText,
+      };
+    })
+    .catch((error) => {
+      console.error("getCotizacionList failed", error);
+      throw error;
+    });
+ */
+};
+
+export const getCotizacion = async (itemId: number): Promise<AxiosResponse> => {
+   await sleep(1000);
+   return {
+    data:list?.value[0],
+    status: 200,
+    statusText:'OK'
+  }; 
+
+/*   try {
+
+    console.warn("getCotizacion: init");
+    const response = await axiosInstance.get(
+      cleanUrl(`/web/lists/getbytitle('Vida - Cotización - New')/items(${itemId})?timestamp=${new Date().getTime()}`)
+    );
+
+    const { status, statusText, data }: AxiosResponse = response;
+    console.warn("getCotizacion: status is not 200", {
+      status,
+      data,
+      statusText,
+    });
+    if (status !== 200) {
+      console.error("getCotizacion: status is not 200", {
+        status,
+        data,
+        statusText,
+      });
+    }
+  
+    return {
+      data: data?.value,
+      status,
+      statusText,
+    };
+  } catch (error) {
+    console.error("getCotizacion  failed", error);
+    throw error;
+  } finally {
+    console.log("getCotizacion  finally");
+  } */
+};
