@@ -1,5 +1,254 @@
-// Configurar la base URL de Axios
-export const axiosInstance = axios.create({
-  baseURL: `/_api/`, // Configura la URL base
-  ...config,
+Claro, te puedo ayudar a crear un ejemplo básico de una aplicación de CRUD (Crear, Leer, Actualizar, Eliminar) para un formulario de cotización utilizando @mui/material, @emotion/react, @emotion/styled, y Redux. En este ejemplo, gestionaremos un listado de cotizaciones y permitiremos al usuario agregar, editar y eliminar cotizaciones.
+
+Instalación de Dependencias
+Asegúrate de tener instaladas las siguientes dependencias:
+
+bash
+Copiar código
+npm install @mui/material @emotion/react @emotion/styled redux react-redux
+O con yarn:
+
+bash
+Copiar código
+yarn add @mui/material @emotion/react @emotion/styled redux react-redux
+Configuración de Redux
+1. Definir el Estado y Reducer
+Vamos a definir el estado y el reducer para manejar las cotizaciones.
+
+javascript
+Copiar código
+// store.js
+import { createStore, combineReducers } from 'redux';
+
+// Estado inicial
+const initialState = {
+  quotes: [],
+  currentQuote: null
+};
+
+// Acción para agregar cotización
+const ADD_QUOTE = 'ADD_QUOTE';
+// Acción para actualizar cotización
+const UPDATE_QUOTE = 'UPDATE_QUOTE';
+// Acción para eliminar cotización
+const DELETE_QUOTE = 'DELETE_QUOTE';
+// Acción para seleccionar una cotización
+const SELECT_QUOTE = 'SELECT_QUOTE';
+
+// Reducer
+const quoteReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case ADD_QUOTE:
+      return {
+        ...state,
+        quotes: [...state.quotes, action.payload]
+      };
+    case UPDATE_QUOTE:
+      return {
+        ...state,
+        quotes: state.quotes.map(quote =>
+          quote.id === action.payload.id ? action.payload : quote
+        ),
+        currentQuote: null
+      };
+    case DELETE_QUOTE:
+      return {
+        ...state,
+        quotes: state.quotes.filter(quote => quote.id !== action.payload)
+      };
+    case SELECT_QUOTE:
+      return {
+        ...state,
+        currentQuote: action.payload
+      };
+    default:
+      return state;
+  }
+};
+
+// Crear el store
+const rootReducer = combineReducers({
+  quotes: quoteReducer
 });
+const store = createStore(rootReducer);
+
+export default store;
+Crear el Componente de Formulario de Cotización
+Vamos a crear un formulario que permita agregar o editar una cotización.
+
+javascript
+Copiar código
+// QuoteForm.js
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { TextField, Button, Container, Paper, Typography } from '@mui/material';
+import { styled } from '@emotion/styled';
+
+// Estilos personalizados
+const StyledPaper = styled(Paper)`
+  padding: 20px;
+  margin-top: 20px;
+`;
+
+const QuoteForm = () => {
+  const dispatch = useDispatch();
+  const currentQuote = useSelector(state => state.quotes.currentQuote);
+  const [formData, setFormData] = React.useState({
+    id: '',
+    description: '',
+    amount: ''
+  });
+
+  useEffect(() => {
+    if (currentQuote) {
+      setFormData(currentQuote);
+    } else {
+      setFormData({
+        id: '',
+        description: '',
+        amount: ''
+      });
+    }
+  }, [currentQuote]);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (formData.id) {
+      dispatch({ type: 'UPDATE_QUOTE', payload: formData });
+    } else {
+      dispatch({ type: 'ADD_QUOTE', payload: { ...formData, id: Date.now() } });
+    }
+    setFormData({
+      id: '',
+      description: '',
+      amount: ''
+    });
+  };
+
+  return (
+    <Container component="main" maxWidth="xs">
+      <StyledPaper elevation={3}>
+        <Typography variant="h5">{formData.id ? 'Editar Cotización' : 'Agregar Cotización'}</Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            name="description"
+            label="Descripción"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={formData.description}
+            onChange={handleChange}
+          />
+          <TextField
+            name="amount"
+            label="Monto"
+            type="number"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={formData.amount}
+            onChange={handleChange}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            style={{ marginTop: 20 }}
+          >
+            {formData.id ? 'Actualizar' : 'Agregar'}
+          </Button>
+        </form>
+      </StyledPaper>
+    </Container>
+  );
+};
+
+export default QuoteForm;
+Crear el Componente para Listar y Gestionar Cotizaciones
+Vamos a crear un componente que liste las cotizaciones y permita eliminarlas y seleccionarlas para editar.
+
+javascript
+Copiar código
+// QuoteList.js
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Container, Paper, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import { styled } from '@emotion/styled';
+
+// Estilos personalizados
+const StyledPaper = styled(Paper)`
+  padding: 20px;
+  margin-top: 20px;
+`;
+
+const QuoteList = () => {
+  const dispatch = useDispatch();
+  const quotes = useSelector(state => state.quotes.quotes);
+
+  const handleEdit = (quote) => {
+    dispatch({ type: 'SELECT_QUOTE', payload: quote });
+  };
+
+  const handleDelete = (id) => {
+    dispatch({ type: 'DELETE_QUOTE', payload: id });
+  };
+
+  return (
+    <Container component="main" maxWidth="xs">
+      <StyledPaper elevation={3}>
+        <Typography variant="h5">Listado de Cotizaciones</Typography>
+        <List>
+          {quotes.map(quote => (
+            <ListItem key={quote.id}>
+              <ListItemText
+                primary={`Descripción: ${quote.description}`}
+                secondary={`Monto: ${quote.amount}`}
+              />
+              <ListItemSecondaryAction>
+                <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(quote)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(quote.id)}>
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+      </StyledPaper>
+    </Container>
+  );
+};
+
+export default QuoteList;
+Crear el Componente Principal
+Ahora, combina ambos componentes (QuoteForm y QuoteList) en el componente principal.
+
+javascript
+Copiar código
+// App.js
+import React from 'react';
+import QuoteForm from './QuoteForm';
+import QuoteList from './QuoteList';
+
+function App() {
+  return (
+    <div>
+      <QuoteForm />
+      <QuoteList />
+    </div>
+  );
+}
+
+export default App;
