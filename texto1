@@ -488,3 +488,87 @@ Al instalar el servicio y ejecutarlo, podrás modificar el intervalo del tempori
 Esta estructura te permite tener un temporizador parametrizable sin necesidad de recompilar el proyecto cada vez que quieras cambiar el intervalo del servicio.
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+using System;
+using System.Diagnostics;
+using System.ServiceProcess;
+using System.Timers;
+using System.Configuration;
+
+namespace MyWindowsService
+{
+    public partial class MyService : ServiceBase
+    {
+        private Timer _timer;
+        private EventLog _eventLog;
+
+        public MyService()
+        {
+            InitializeComponent();
+            // Inicializar el registro de eventos
+            _eventLog = new EventLog();
+            if (!EventLog.SourceExists("MyServiceSource"))
+            {
+                EventLog.CreateEventSource("MyServiceSource", "MyServiceLog");
+            }
+            _eventLog.Source = "MyServiceSource";
+            _eventLog.Log = "MyServiceLog";
+        }
+
+        protected override void OnStart(string[] args)
+        {
+            int interval = GetTimerInterval();
+
+            _eventLog.WriteEntry("El servicio ha comenzado.", EventLogEntryType.Information);
+
+            _timer = new Timer(interval);
+            _timer.Elapsed += new ElapsedEventHandler(OnElapsedTime);
+            _timer.Start();
+        }
+
+        private void OnElapsedTime(object source, ElapsedEventArgs e)
+        {
+            // Aquí puedes poner la lógica que se ejecutará cada vez que el temporizador se dispare.
+            // Por ejemplo, registrar una entrada en el registro de eventos para indicar que se ha ejecutado.
+            _eventLog.WriteEntry("El servicio está ejecutando su tarea en " + DateTime.Now, EventLogEntryType.Information);
+
+            // Aquí puedes agregar tu lógica de proceso, por ejemplo:
+            // ProcesarArchivos();
+        }
+
+        protected override void OnStop()
+        {
+            _eventLog.WriteEntry("El servicio se ha detenido.", EventLogEntryType.Information);
+
+            _timer.Stop();
+            _timer.Dispose();
+        }
+
+        private int GetTimerInterval()
+        {
+            string intervalStr = ConfigurationManager.AppSettings["TimerInterval"];
+            int interval;
+
+            if (!int.TryParse(intervalStr, out interval))
+            {
+                interval = 60000;
+            }
+
+            return interval;
+        }
+    }
+}
