@@ -578,3 +578,63 @@ namespace MyWindowsService
 
 
 https://www.copycat.dev/blog/material-ui-form/
+
+
+
+
+
+import React, { useState } from 'react';
+import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
+
+interface ChoiceFieldProps {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (event: React.ChangeEvent<{ value: unknown }>) => void;
+  error?: boolean;
+  helperText?: string;
+}
+
+const ChoiceField: React.FC<ChoiceFieldProps> = ({ label, options, value, onChange, error, helperText }) => {
+  return (
+    <FormControl fullWidth error={error}>
+      <InputLabel id="choice-field-label">{label}</InputLabel>
+      <Select
+        labelId="choice-field-label"
+        value={value}
+        onChange={onChange}
+        label={label}
+      >
+        {options.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+      </Select>
+      {helperText && <FormHelperText>{helperText}</FormHelperText>}
+    </FormControl>
+  );
+};
+
+const App: React.FC = () => {
+  const [selectedOption, setSelectedOption] = useState<string>('');
+  const options = ['Option 1', 'Option 2', 'Option 3'];
+
+  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSelectedOption(event.target.value as string);
+  };
+
+  return (
+    <div style={{ padding: 20 }}>
+      <ChoiceField
+        label="Choose an option"
+        options={options}
+        value={selectedOption}
+        onChange={handleChange}
+        helperText="Please select an option"
+      />
+    </div>
+  );
+};
+
+export default App;
