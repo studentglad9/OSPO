@@ -35,6 +35,19 @@ const DELETE_QUOTE = 'DELETE_QUOTE';
 // Acción para seleccionar una cotización
 const SELECT_QUOTE = 'SELECT_QUOTE';
 
+
+
+
+const path = require('path');
+
+module.exports = {
+  webpack: function (config, env) {
+    // Cambia la carpeta de salida de `build` a `dist`
+    config.output.path = path.resolve(__dirname, 'dist');
+    return config;
+  },
+};
+
 // Reducer
 const quoteReducer = (state = initialState, action) => {
   switch (action.type) {
