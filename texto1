@@ -651,3 +651,16 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+
+
+
+const path = require('path');
+
+module.exports = {
+  webpack: function (config, env) {
+    // Cambia la carpeta de salida de `build` a `dist`
+    config.output.path = path.resolve(__dirname, 'dist');
+    return config;
+  },
+};
