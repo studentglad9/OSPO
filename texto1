@@ -1,232 +1,83 @@
-import * as React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { TextField, Button, Container, Paper, Typography, Stack, SelectChangeEvent, InputLabel, Select,MenuItem } from '@mui/material';
-import styled from '@emotion/styled';
-import { useEffect } from 'react';
-import { getItemCotizacion, updateItemCotizacion, addtemCotizacion, getElementsCotizacionChoice } from '../../../../store/actions/CotizacionActions';
-import { resetItemCotizacion, setItemCotizacion } from './helper';
-import { ChoiceField } from "../../../typeFields/ChoiceField";
-import { UserFilterField } from "../../../typeFields/UserFilterField";
-// Estilos personalizados
-const StyledPaper = styled(Paper)`
-  padding: 20px;
-  margin-top: 20px;
-`;
-const EditCotizacion: React.FC = () => {
-    const dispatch = useDispatch<any>();
-    const { userName, error } = useSelector(
-        (state: any) => state.sharepointReducer
-    );
-    const { item: currentItem, error: errorCotizacion, elementsTipoGestion, elementsCrm, elementsCartaNombramiento, elementsTipoCobertura, elementsEnviadoCliente, elementsAseguradora, elementsDecisionCliente, usersSolicitaCotizacion, usersHcb } = useSelector(
-        (state: any) => state.cotizacionReducer
-    );
+import React, { useState, useEffect } from "react";
+import { Autocomplete, TextField } from "@mui/material";
 
+interface UserFilterFieldProps {
+  name: string;
+  label: string;
+  users: any;
+  value: string;
+  title: string;
+  onChange: (event: React.ChangeEvent<any>) => void;
+}
 
+export const UserFilterField: React.FC<UserFilterFieldProps> = ({
+  name,
+  label,
+  users,
+  onChange,
+  value,
+  title,
+}) => {
+  const [selectedName, setSelectedName] = useState<any>(null);
+  const [showAutocomplete, setShowAutocomplete] = useState<boolean>(true);
+  const newUsers = () => {
+    return users.map((u: any) => {
+      return {
+        id: u.Id,
+        title: u.Title,
+      };
+    });
+  };
 
-    const [formData, setFormData] = React.useState(resetItemCotizacion());
-    const [selectedOption, setSelectedOption] = React.useState<string>('');
-
-    useEffect(() => {
-        if (currentItem) {
-            setFormData(setItemCotizacion(currentItem));
-        } else {
-            setFormData(resetItemCotizacion());
-        }
-    }, [currentItem]);
-
-    /*     useEffect(() => {
-            dispatch(getItemCotizacion());
-        }, [dispatch]); 
-     */
-
-    const handleChange = (event: any) => {
-        const { name, value } = event.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+  useEffect(() => {
+    if (value && Array.isArray(users) && users.length > 0) {
+      const user = users.find((u: any) => u.Id === value);
+      const newUser = {
+        id: user.Id,
+        title: user.Title,
+      };
+      setSelectedName(newUser);
+    } else {
+      setSelectedName("");
+    }
+  }, [users, value]);
+  const handleNameChange = (event: any, newValue: any) => {
+    setSelectedName(newValue);
+    const newEvent = {
+      ...event,
+      target: {
+        ...event.target,
+        name: name,
+        value: newValue?.id,
+      },
     };
+    onChange(newEvent);
+  };
 
-    const handleChoiceChange = (event: SelectChangeEvent<{ value: unknown }>) => {
-        setSelectedOption(event.target.value as string);
-    };
+  const toggleAutocompleteVisibility = () => {
+    setShowAutocomplete(!showAutocomplete); // Cambia la visibilidad del Autocomplete
+  };
 
-    const handleSubmit = (event: any) => {
-        event.preventDefault();
-        if (currentItem.id) {
-            dispatch(updateItemCotizacion(currentItem));
-        } else {
-            dispatch(addtemCotizacion(currentItem));
-        }
-        setFormData(setItemCotizacion(currentItem));
-    };
-    return (
+  return (
+    <div>
+      <button onClick={toggleAutocompleteVisibility}>
+        {showAutocomplete ? "Ocultar" : "Mostrar"} Autocomplete
+      </button>
 
-        <Container component="main" maxWidth="md">
-            <StyledPaper elevation={3}>
-                <Typography variant="h5">{formData.id ? 'Editar Cotización' : 'Agregar Cotización'}</Typography>
-                <form onSubmit={handleSubmit}>
-                    <TextField name="usuarioSolicitaCotización"
-                        label="UsuarioSolicitaCotización"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        value={JSON.stringify(usersSolicitaCotizacion)} />
-                    <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
-                        <TextField
-                            name="id"
-                            label="Id"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={formData.id}
-                            onChange={handleChange}
-                        />
-                        <TextField
-                            name="cuit"
-                            label="Cuit"
-                            type="number"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={formData.cuit}
-                            onChange={handleChange}
-                        />
-                        <TextField
-                            name="areaSolicitud"
-                            label="AreaSolicitud"
-                            type="string"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={formData.areaSolicitud}
-                            onChange={handleChange}
-                        />
+      {showAutocomplete && (
+        <Autocomplete
+          options={newUsers()}
+          getOptionLabel={(option) => option.title}
+          renderInput={(params) => (
+            <TextField {...params} label="Buscar nombre" variant="outlined" />
+          )}
+          value={selectedName}
+          onChange={handleNameChange}
+        />
+      )}
 
-                    </Stack>
-                    <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
-                  
-                         <UserFilterField
-                            name="usuarioSolicitaCotización"
-                            label="Usuario Solicita Cotización"
-                            users={usersSolicitaCotizacion}
-                            value={formData.usuarioSolicitaCotización}
-                            onChange={handleChange}
-                            title=""
-                        /> 
-                        <ChoiceField
-                            label="Tipo de Gestión"
-                            options={elementsTipoGestion}
-                            value={formData.tipoGestión}
-                            onChange={handleChange}
-                            helperText="Please select an option"
-                        />
-                        <ChoiceField
-                            label="CRM"
-                            options={elementsCrm}
-                            value={formData.crm}
-                            onChange={handleChange}
-                            helperText="Please select an option"
-                        />
-
-                    </Stack>
-                    <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
-                        <TextField
-                            name="ejecutivoHCB"
-                            label="EjecutivoHCB"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={formData.ejecutivoHCB}
-                            onChange={handleChange}
-                        />
-                        <ChoiceField
-                            label="Carta de Nombramiento"
-                            options={elementsCartaNombramiento}
-                            value={formData.cartaNombramiento}
-                            onChange={handleChange}
-                            helperText="Please select an option"
-                        />
-                        <ChoiceField
-                            label="Tipo de Cobertura"
-                            options={elementsTipoCobertura}
-                            value={formData.tipoCobertura}
-                            onChange={handleChange}
-                            helperText="Please select an option"
-                        />
-
-                    </Stack>
-                    <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
-                        <TextField
-                            name="númeroPóliza"
-                            label="NúmeroPóliza"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={formData.númeroPóliza}
-                            onChange={handleChange}
-                        />
-                        <TextField
-                            name="premioMensualActual"
-                            label="Premio Mensual Actual"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={formData.premioMensualActual}
-                            onChange={handleChange}
-                        />
-                        <TextField
-                            name="comisionActual"
-                            label="Comision Actual"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={formData.comisionActual}
-                            onChange={handleChange}
-                        />
-
-                    </Stack>
-                    <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
-                        <ChoiceField
-                            label="Enviado al Cliente"
-                            options={elementsEnviadoCliente}
-                            value={formData.enviadoCliente}
-                            onChange={handleChange}
-                            helperText="Please select an option"
-                        />
-                        <TextField
-                            name="observaciones"
-                            label="Observaciones"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={formData.observaciones}
-                            onChange={handleChange}
-                        />
-                        <TextField
-                            name="fechaEnvíoCliente"
-                            label="Fecha Envío Cliente"
-                            variant="outlined"
-                            fullWidth
-                            margin="normal"
-                            value={formData.fechaEnvíoCliente}
-                            onChange={handleChange}
-                        />
-
-                    </Stack>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        style={{ marginTop: 20 }}
-                    >
-                        {formData.id ? 'Actualizar' : 'Agregar'}
-                    </Button>
-                </form>
-            </StyledPaper>
-        </Container>
-    );
+      {/* Elemento oculto para el ID seleccionado */}
+      <input type="hidden" value={selectedName?.id ?? ""} />
+    </div>
+  );
 };
-
-export default EditCotizacion;
