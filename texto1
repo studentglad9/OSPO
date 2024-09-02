@@ -341,3 +341,67 @@ export default function ComboBox() {
     />
   );
 }
+
+
+
+
+
+
+import React, { useState } from 'react';
+import { Autocomplete, TextField, ListItem, ListItemText } from '@mui/material';
+
+interface Name {
+  id: number;
+  name: string;
+}
+
+const names: Name[] = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+  { id: 3, name: "Charlie" },
+  { id: 4, name: "David" },
+  { id: 5, name: "Eve" },
+  { id: 6, name: "Frank" },
+  { id: 7, name: "Grace" },
+  { id: 8, name: "Hank" },
+  { id: 9, name: "Ivy" },
+  { id: 10, name: "Jack" },
+];
+
+const NameSearch: React.FC = () => {
+  const [selectedName, setSelectedName] = useState<Name | null>(null);
+  const [showAutocomplete, setShowAutocomplete] = useState<boolean>(true);
+
+  const handleNameChange = (event: any, newValue: Name | null) => {
+    setSelectedName(newValue);
+  };
+
+  const toggleAutocompleteVisibility = () => {
+    setShowAutocomplete(!showAutocomplete);  // Cambia la visibilidad del Autocomplete
+  };
+
+  return (
+    <div>
+      <button onClick={toggleAutocompleteVisibility}>
+        {showAutocomplete ? "Ocultar" : "Mostrar"} Autocomplete
+      </button>
+
+      {showAutocomplete && (
+        <Autocomplete
+          options={names}
+          getOptionLabel={(option) => option.name}
+          renderInput={(params) => (
+            <TextField {...params} label="Buscar nombre" variant="outlined" />
+          )}
+          value={selectedName}
+          onChange={handleNameChange}
+        />
+      )}
+
+      {/* Elemento oculto para el ID seleccionado */}
+      <input type="hidden" value={selectedName?.id ?? ""} />
+    </div>
+  );
+};
+
+export default NameSearch;
