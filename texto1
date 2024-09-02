@@ -235,3 +235,72 @@ Este ejemplo demuestra cómo puedes integrar TypeScript con Material-UI para cre
     }
   ]
 }
+
+
+
+
+import React, { useState } from 'react';
+import { TextField, List, ListItem, ListItemText } from '@mui/material';
+
+const names: string[] = [
+  "Alice",
+  "Bob",
+  "Charlie",
+  "David",
+  "Eve",
+  "Frank",
+  "Grace",
+  "Hank",
+  "Ivy",
+  "Jack",
+];
+
+const NameSearch: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedName, setSelectedName] = useState<string>("");
+
+  // Filtra los nombres basados en el término de búsqueda
+  const filteredNames: string[] = names.filter((name) =>
+    name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Maneja el cambio en el campo de texto
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setSelectedName(""); // Resetea el nombre seleccionado si el usuario escribe algo nuevo
+  };
+
+  // Maneja la selección de un nombre de la lista
+  const handleNameSelect = (name: string) => {
+    setSelectedName(name);
+    setSearchTerm(name); // Refleja el nombre seleccionado en el campo de texto
+  };
+
+  return (
+    <div>
+      <TextField
+        label="Buscar nombre"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={searchTerm}
+        onChange={handleInputChange}
+      />
+
+      <List>
+        {filteredNames.map((name, index) => (
+          <ListItem
+            key={index}
+            button
+            selected={name === selectedName} // Marca el nombre seleccionado
+            onClick={() => handleNameSelect(name)} // Maneja el clic en un nombre
+          >
+            <ListItemText primary={name} />
+          </ListItem>
+        ))}
+      </List>
+    </div>
+  );
+}
+
+export default NameSearch;
