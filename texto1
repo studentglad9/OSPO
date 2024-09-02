@@ -1,407 +1,232 @@
-2. Estructura del componente con TypeScript:
-El componente será similar al ejemplo anterior, pero ahora vamos a tipar las propiedades y el estado.
-
-3. Código de ejemplo:
-tsx
-Copiar código
-import React, { useState } from 'react';
-import { TextField, List, ListItem, ListItemText } from '@mui/material';
-
-const names: string[] = [
-  "Alice",
-  "Bob",
-  "Charlie",
-  "David",
-  "Eve",
-  "Frank",
-  "Grace",
-  "Hank",
-  "Ivy",
-  "Jack",
-];
-
-const NameSearch: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-
-  // Filtra los nombres basados en el término de búsqueda
-  const filteredNames: string[] = names.filter((name) =>
-    name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  return (
-    <div>
-      <TextField
-        label="Buscar nombre"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        value={searchTerm}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-      />
-
-      <List>
-        {filteredNames.map((name, index) => (
-          <ListItem key={index}>
-            <ListItemText primary={name} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
-}
-
-export default NameSearch;
-4. Explicación del código con TypeScript:
-Tipo del estado (useState<string>): En este caso, especificamos que searchTerm es una cadena de texto (string), lo cual ayuda a TypeScript a comprender el tipo de datos que estamos utilizando y a evitar posibles errores.
-
-Tipo de datos (string[]): La constante names está tipada como un array de strings (string[]). De esta manera, TypeScript sabrá que names solo puede contener cadenas.
-
-Tipado de eventos (React.ChangeEvent<HTMLInputElement>): Al manejar el evento onChange, especificamos que el evento que estamos manejando es de tipo React.ChangeEvent<HTMLInputElement>, lo que asegura que el evento es del tipo correcto y ayuda a proporcionar autocompletado y validación en el código.
-
-React.FC: El componente está tipado como un componente funcional de React (React.FC), lo que le da a TypeScript información sobre el tipo del componente y sus props. Si tienes props personalizadas, podrías tiparlas aquí.
-
-5. Mejoras y funcionalidades adicionales:
-Con TypeScript, puedes llevar esto un paso más allá agregando tipos más específicos o gestionando estados más complejos.
-
-Tipado de props: Si decides pasar una lista de nombres como prop al componente, puedes definir una interfaz para ello:
-
-tsx
-Copiar código
-interface NameSearchProps {
-  names: string[];
-}
-
-const NameSearch: React.FC<NameSearchProps> = ({ names }) => {
-  // El resto del código...
-}
-Manejo de estados complejos: Si en algún momento necesitas manejar un estado más complejo, podrías utilizar un tipo personalizado o un interface para definirlo.
-
-Este ejemplo demuestra cómo puedes integrar TypeScript con Material-UI para crear un buscador de nombres. Si tienes más preguntas o deseas personalizar alguna parte, ¡estaré encantado de ayudarte!
+import * as React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { TextField, Button, Container, Paper, Typography, Stack, SelectChangeEvent, InputLabel, Select,MenuItem } from '@mui/material';
+import styled from '@emotion/styled';
+import { useEffect } from 'react';
+import { getItemCotizacion, updateItemCotizacion, addtemCotizacion, getElementsCotizacionChoice } from '../../../../store/actions/CotizacionActions';
+import { resetItemCotizacion, setItemCotizacion } from './helper';
+import { ChoiceField } from "../../../typeFields/ChoiceField";
+import { UserFilterField } from "../../../typeFields/UserFilterField";
+// Estilos personalizados
+const StyledPaper = styled(Paper)`
+  padding: 20px;
+  margin-top: 20px;
+`;
+const EditCotizacion: React.FC = () => {
+    const dispatch = useDispatch<any>();
+    const { userName, error } = useSelector(
+        (state: any) => state.sharepointReducer
+    );
+    const { item: currentItem, error: errorCotizacion, elementsTipoGestion, elementsCrm, elementsCartaNombramiento, elementsTipoCobertura, elementsEnviadoCliente, elementsAseguradora, elementsDecisionCliente, usersSolicitaCotizacion, usersHcb } = useSelector(
+        (state: any) => state.cotizacionReducer
+    );
 
 
 
+    const [formData, setFormData] = React.useState(resetItemCotizacion());
+    const [selectedOption, setSelectedOption] = React.useState<string>('');
 
+    useEffect(() => {
+        if (currentItem) {
+            setFormData(setItemCotizacion(currentItem));
+        } else {
+            setFormData(resetItemCotizacion());
+        }
+    }, [currentItem]);
 
-{
-  "odata.metadata": "http://localhost:8080/sites/MiSite/_api/$metadata#SP.ApiData.Users1",
-  "value": [
-    {
-      "odata.type": "SP.User",
-      "odata.id": "https://rocktweens.sharepoint.com/sites/MiSite/_api/Web/GetUserById(11)",
-      "odata.editLink": "Web/GetUserById(11)",
-      "Id": 11,
-      "IsHiddenInUI": false,
-      "LoginName": "c:0(.s|true",
-      "Title": "Everyone",
-      "PrincipalType": 4,
-      "Email": "",
-      "Expiration": "",
-      "IsEmailAuthenticationGuestUser": false,
-      "IsShareByEmailGuestUser": false,
-      "IsSiteAdmin": false,
-      "UserId": null,
-      "UserPrincipalName": null
-    },
-    {
-      "odata.type": "SP.User",
-      "odata.id": "https://rocktweens.sharepoint.com/sites/MiSite/_api/Web/GetUserById(9)",
-      "odata.editLink": "Web/GetUserById(9)",
-      "Id": 9,
-      "IsHiddenInUI": false,
-      "LoginName": "c:0-.f|rolemanager|spo-grid-all-users/9f99310d-4e26-4e0a-a937-f7f8afd075e4",
-      "Title": "Everyone except external users",
-      "PrincipalType": 4,
-      "Email": "",
-      "Expiration": "",
-      "IsEmailAuthenticationGuestUser": false,
-      "IsShareByEmailGuestUser": false,
-      "IsSiteAdmin": false,
-      "UserId": null,
-      "UserPrincipalName": null
-    },
-    {
-      "odata.type": "SP.User",
-      "odata.id": "https://rocktweens.sharepoint.com/sites/MiSite/_api/Web/GetUserById(8)",
-      "odata.editLink": "Web/GetUserById(8)",
-      "Id": 8,
-      "IsHiddenInUI": false,
-      "LoginName": "c:0o.c|federateddirectoryclaimprovider|c3cca727-9fe5-491f-a2a4-154c2a2cba5c",
-      "Title": "MiSite Members",
-      "PrincipalType": 4,
-      "Email": "MiSite@rocktweens.onmicrosoft.com",
-      "Expiration": "",
-      "IsEmailAuthenticationGuestUser": false,
-      "IsShareByEmailGuestUser": false,
-      "IsSiteAdmin": false,
-      "UserId": null,
-      "UserPrincipalName": null
-    },
-    {
-      "odata.type": "SP.User",
-      "odata.id": "https://rocktweens.sharepoint.com/sites/MiSite/_api/Web/GetUserById(6)",
-      "odata.editLink": "Web/GetUserById(6)",
-      "Id": 6,
-      "IsHiddenInUI": true,
-      "LoginName": "c:0o.c|federateddirectoryclaimprovider|c3cca727-9fe5-491f-a2a4-154c2a2cba5c_o",
-      "Title": "MiSite Owners",
-      "PrincipalType": 4,
-      "Email": "MiSite@rocktweens.onmicrosoft.com",
-      "Expiration": "",
-      "IsEmailAuthenticationGuestUser": false,
-      "IsShareByEmailGuestUser": false,
-      "IsSiteAdmin": true,
-      "UserId": null,
-      "UserPrincipalName": null
-    },
-    {
-      "odata.type": "SP.User",
-      "odata.id": "https://rocktweens.sharepoint.com/sites/MiSite/_api/Web/GetUserById(10)",
-      "odata.editLink": "Web/GetUserById(10)",
-      "Id": 10,
-      "IsHiddenInUI": false,
-      "LoginName": "i:0#.w|nt service\\spsearch",
-      "Title": "NT Service\\spsearch",
-      "PrincipalType": 1,
-      "Email": "",
-      "Expiration": "",
-      "IsEmailAuthenticationGuestUser": false,
-      "IsShareByEmailGuestUser": false,
-      "IsSiteAdmin": false,
-      "UserId": {
-        "NameId": "s-1-5-80-87383287-2054257049-3601873072-440163018-3271026472",
-        "NameIdIssuer": "urn:office:idp:activedirectory"
-      },
-      "UserPrincipalName": null
-    },
-    {
-      "odata.type": "SP.User",
-      "odata.id": "https://rocktweens.sharepoint.com/sites/MiSite/_api/Web/GetUserById(7)",
-      "odata.editLink": "Web/GetUserById(7)",
-      "Id": 7,
-      "IsHiddenInUI": false,
-      "LoginName": "i:0#.f|membership|sallyflores@rocktweens.onmicrosoft.com",
-      "Title": "Sally Flores",
-      "PrincipalType": 1,
-      "Email": "",
-      "Expiration": "",
-      "IsEmailAuthenticationGuestUser": false,
-      "IsShareByEmailGuestUser": false,
-      "IsSiteAdmin": false,
-      "UserId": {
-        "NameId": "10032003b2a3c4a4",
-        "NameIdIssuer": "urn:federation:microsoftonline"
-      },
-      "UserPrincipalName": "sallyflores@rocktweens.onmicrosoft.com"
-    },
-    {
-      "odata.type": "SP.User",
-      "odata.id": "https://rocktweens.sharepoint.com/sites/MiSite/_api/Web/GetUserById(1073741822)",
-      "odata.editLink": "Web/GetUserById(1073741822)",
-      "Id": 1073741822,
-      "IsHiddenInUI": false,
-      "LoginName": "i:0i.t|00000003-0000-0ff1-ce00-000000000000|app@sharepoint",
-      "Title": "SharePoint App",
-      "PrincipalType": 1,
-      "Email": "",
-      "Expiration": "",
-      "IsEmailAuthenticationGuestUser": false,
-      "IsShareByEmailGuestUser": false,
-      "IsSiteAdmin": false,
-      "UserId": {
-        "NameId": "app@sharepoint",
-        "NameIdIssuer": "TrustedProvider:00000003-0000-0ff1-ce00-000000000000"
-      },
-      "UserPrincipalName": null
-    },
-    {
-      "odata.type": "SP.User",
-      "odata.id": "https://rocktweens.sharepoint.com/sites/MiSite/_api/Web/GetUserById(1073741823)",
-      "odata.editLink": "Web/GetUserById(1073741823)",
-      "Id": 1073741823,
-      "IsHiddenInUI": false,
-      "LoginName": "SHAREPOINT\\system",
-      "Title": "System Account",
-      "PrincipalType": 1,
-      "Email": "",
-      "Expiration": "",
-      "IsEmailAuthenticationGuestUser": false,
-      "IsShareByEmailGuestUser": false,
-      "IsSiteAdmin": false,
-      "UserId": {
-        "NameId": "S-1-0-0",
-        "NameIdIssuer": "urn:office:idp:activedirectory"
-      },
-      "UserPrincipalName": null
-    }
-  ]
-}
+    /*     useEffect(() => {
+            dispatch(getItemCotizacion());
+        }, [dispatch]); 
+     */
 
+    const handleChange = (event: any) => {
+        const { name, value } = event.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
 
+    const handleChoiceChange = (event: SelectChangeEvent<{ value: unknown }>) => {
+        setSelectedOption(event.target.value as string);
+    };
 
+    const handleSubmit = (event: any) => {
+        event.preventDefault();
+        if (currentItem.id) {
+            dispatch(updateItemCotizacion(currentItem));
+        } else {
+            dispatch(addtemCotizacion(currentItem));
+        }
+        setFormData(setItemCotizacion(currentItem));
+    };
+    return (
 
-import React, { useState } from 'react';
-import { TextField, List, ListItem, ListItemText } from '@mui/material';
+        <Container component="main" maxWidth="md">
+            <StyledPaper elevation={3}>
+                <Typography variant="h5">{formData.id ? 'Editar Cotización' : 'Agregar Cotización'}</Typography>
+                <form onSubmit={handleSubmit}>
+                    <TextField name="usuarioSolicitaCotización"
+                        label="UsuarioSolicitaCotización"
+                        variant="outlined"
+                        fullWidth
+                        margin="normal"
+                        value={JSON.stringify(usersSolicitaCotizacion)} />
+                    <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
+                        <TextField
+                            name="id"
+                            label="Id"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={formData.id}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            name="cuit"
+                            label="Cuit"
+                            type="number"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={formData.cuit}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            name="areaSolicitud"
+                            label="AreaSolicitud"
+                            type="string"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={formData.areaSolicitud}
+                            onChange={handleChange}
+                        />
 
-const names: string[] = [
-  "Alice",
-  "Bob",
-  "Charlie",
-  "David",
-  "Eve",
-  "Frank",
-  "Grace",
-  "Hank",
-  "Ivy",
-  "Jack",
-];
+                    </Stack>
+                    <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
+                  
+                         <UserFilterField
+                            name="usuarioSolicitaCotización"
+                            label="Usuario Solicita Cotización"
+                            users={usersSolicitaCotizacion}
+                            value={formData.usuarioSolicitaCotización}
+                            onChange={handleChange}
+                            title=""
+                        /> 
+                        <ChoiceField
+                            label="Tipo de Gestión"
+                            options={elementsTipoGestion}
+                            value={formData.tipoGestión}
+                            onChange={handleChange}
+                            helperText="Please select an option"
+                        />
+                        <ChoiceField
+                            label="CRM"
+                            options={elementsCrm}
+                            value={formData.crm}
+                            onChange={handleChange}
+                            helperText="Please select an option"
+                        />
 
-const NameSearch: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [selectedName, setSelectedName] = useState<string>("");
+                    </Stack>
+                    <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
+                        <TextField
+                            name="ejecutivoHCB"
+                            label="EjecutivoHCB"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={formData.ejecutivoHCB}
+                            onChange={handleChange}
+                        />
+                        <ChoiceField
+                            label="Carta de Nombramiento"
+                            options={elementsCartaNombramiento}
+                            value={formData.cartaNombramiento}
+                            onChange={handleChange}
+                            helperText="Please select an option"
+                        />
+                        <ChoiceField
+                            label="Tipo de Cobertura"
+                            options={elementsTipoCobertura}
+                            value={formData.tipoCobertura}
+                            onChange={handleChange}
+                            helperText="Please select an option"
+                        />
 
-  // Filtra los nombres basados en el término de búsqueda
-  const filteredNames: string[] = names.filter((name) =>
-    name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+                    </Stack>
+                    <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
+                        <TextField
+                            name="númeroPóliza"
+                            label="NúmeroPóliza"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={formData.númeroPóliza}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            name="premioMensualActual"
+                            label="Premio Mensual Actual"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={formData.premioMensualActual}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            name="comisionActual"
+                            label="Comision Actual"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={formData.comisionActual}
+                            onChange={handleChange}
+                        />
 
-  // Maneja el cambio en el campo de texto
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setSelectedName(""); // Resetea el nombre seleccionado si el usuario escribe algo nuevo
-  };
+                    </Stack>
+                    <Stack spacing={2} direction="row" sx={{ marginBottom: 4 }}>
+                        <ChoiceField
+                            label="Enviado al Cliente"
+                            options={elementsEnviadoCliente}
+                            value={formData.enviadoCliente}
+                            onChange={handleChange}
+                            helperText="Please select an option"
+                        />
+                        <TextField
+                            name="observaciones"
+                            label="Observaciones"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={formData.observaciones}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            name="fechaEnvíoCliente"
+                            label="Fecha Envío Cliente"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            value={formData.fechaEnvíoCliente}
+                            onChange={handleChange}
+                        />
 
-  // Maneja la selección de un nombre de la lista
-  const handleNameSelect = (name: string) => {
-    setSelectedName(name);
-    setSearchTerm(name); // Refleja el nombre seleccionado en el campo de texto
-  };
-
-  return (
-    <div>
-      <TextField
-        label="Buscar nombre"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        value={searchTerm}
-        onChange={handleInputChange}
-      />
-
-      <List>
-        {filteredNames.map((name, index) => (
-          <ListItem
-            key={index}
-            button
-            selected={name === selectedName} // Marca el nombre seleccionado
-            onClick={() => handleNameSelect(name)} // Maneja el clic en un nombre
-          >
-            <ListItemText primary={name} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
-}
-
-export default NameSearch;
-
-
-
-
-<FormControl fullWidth>
-  <InputLabel id="demo-simple-select-label">Age</InputLabel>
-  <Select
-    labelId="demo-simple-select-label"
-    id="demo-simple-select"
-    value={age}
-    label="Age"
-    onChange={handleChange}
-  >
-    <MenuItem value={10}>Ten</MenuItem>
-    <MenuItem value={20}>Twenty</MenuItem>
-    <MenuItem value={30}>Thirty</MenuItem>
-  </Select>
-</FormControl>
-
-
-
-
-import * as React from 'react';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import top100Films from './top100Films';
-
-export default function ComboBox() {
-  return (
-    <Autocomplete
-      disablePortal
-      options={top100Films}
-      sx={{ width: 300 }}
-      renderInput={(params) => <TextField {...params} label="Movie" />}
-    />
-  );
-}
-
-
-
-
-
-
-import React, { useState } from 'react';
-import { Autocomplete, TextField, ListItem, ListItemText } from '@mui/material';
-
-interface Name {
-  id: number;
-  name: string;
-}
-
-const names: Name[] = [
-  { id: 1, name: "Alice" },
-  { id: 2, name: "Bob" },
-  { id: 3, name: "Charlie" },
-  { id: 4, name: "David" },
-  { id: 5, name: "Eve" },
-  { id: 6, name: "Frank" },
-  { id: 7, name: "Grace" },
-  { id: 8, name: "Hank" },
-  { id: 9, name: "Ivy" },
-  { id: 10, name: "Jack" },
-];
-
-const NameSearch: React.FC = () => {
-  const [selectedName, setSelectedName] = useState<Name | null>(null);
-  const [showAutocomplete, setShowAutocomplete] = useState<boolean>(true);
-
-  const handleNameChange = (event: any, newValue: Name | null) => {
-    setSelectedName(newValue);
-  };
-
-  const toggleAutocompleteVisibility = () => {
-    setShowAutocomplete(!showAutocomplete);  // Cambia la visibilidad del Autocomplete
-  };
-
-  return (
-    <div>
-      <button onClick={toggleAutocompleteVisibility}>
-        {showAutocomplete ? "Ocultar" : "Mostrar"} Autocomplete
-      </button>
-
-      {showAutocomplete && (
-        <Autocomplete
-          options={names}
-          getOptionLabel={(option) => option.name}
-          renderInput={(params) => (
-            <TextField {...params} label="Buscar nombre" variant="outlined" />
-          )}
-          value={selectedName}
-          onChange={handleNameChange}
-        />
-      )}
-
-      {/* Elemento oculto para el ID seleccionado */}
-      <input type="hidden" value={selectedName?.id ?? ""} />
-    </div>
-  );
+                    </Stack>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        style={{ marginTop: 20 }}
+                    >
+                        {formData.id ? 'Actualizar' : 'Agregar'}
+                    </Button>
+                </form>
+            </StyledPaper>
+        </Container>
+    );
 };
 
-export default NameSearch;
+export default EditCotizacion;
