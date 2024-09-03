@@ -81,3 +81,17 @@ export const UserFilterField: React.FC<UserFilterFieldProps> = ({
     </div>
   );
 };
+
+
+
+const CustomTextField = styled(TextField)({
+  '& .MuiInputBase-input': {
+    color: 'blue', // Cambia el color del texto
+  },
+  '& .MuiInputLabel-root': {
+    color: 'green', // Cambia el color de la etiqueta
+  },
+  '& .MuiOutlinedInput-notchedOutline': {
+    borderColor: 'purple', // Cambia el color del borde
+  },
+});
