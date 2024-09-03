@@ -95,3 +95,16 @@ const CustomTextField = styled(TextField)({
     borderColor: 'purple', // Cambia el color del borde
   },
 });
+
+
+ & .MuiInputBase-input {
+    color: blue; /* Cambia el color del texto */
+  }
+
+  & .MuiInputLabel-root {
+    color: green; /* Cambia el color de la etiqueta (label) */
+  }
+
+  & .MuiOutlinedInput-notchedOutline {
+    border-color: purple; /* Cambia el color del borde */
+  }
